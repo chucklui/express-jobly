@@ -1,4 +1,6 @@
 const { sqlForPartialUpdate } = require("./sql");
+const { BadRequestError } = require("../expressError");
+const { findAll } = require("../models/user");
 
 /**this test for valid inputs for sqlForPartialUpdate */
 describe("sqlForPartialUpdate", function() {
@@ -24,12 +26,15 @@ describe("sqlForPartialUpdate", function() {
             });
     });
 
-    // test("invalid input", function() {
-    //     const result = sqlForPartialUpdate(
-    //         {},
-    //         { firstName: 'first_name', lastName: 'last_name', isAdmin: 'is_admin' });
+    test("invalid input", function() {
+        try{
+            const result = sqlForPartialUpdate(
+                {},
+                { firstName: 'first_name', lastName: 'last_name', isAdmin: 'is_admin' });
+            fail();
+        } catch(err){
+            expect(err instanceof BadRequestError).toBeTruthy();
 
-    //     expect(result.statusCode).toEqual(400);
-    //     expect(result.body.error.message).toEqual("No data");
-    // });
+        }
+    });
 });
