@@ -1,6 +1,5 @@
 const { sqlForPartialUpdate } = require("./sql");
 const { BadRequestError } = require("../expressError");
-const { findAll } = require("../models/user");
 
 /**this test for valid inputs for sqlForPartialUpdate */
 describe("sqlForPartialUpdate", function() {

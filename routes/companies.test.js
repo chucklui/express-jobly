@@ -65,6 +65,34 @@ describe("POST /companies", function () {
 
 /************************************** GET /companies */
 
+describe("GET /companies", function() {
+  test("get filtered all", async function() {
+    const resp = await request(app).get("/companies", 
+                                          {name: "C", 
+                                           minEmployees: 0,
+                                           maxEmployees: 2});
+    expect(resp.body).toEqual({
+      companies:
+          [
+            {
+              handle: "c1",
+              name: "C1",
+              description: "Desc1",
+              numEmployees: 1,
+              logoUrl: "http://c1.img",
+            },
+            {
+              handle: "c2",
+              name: "C2",
+              description: "Desc2",
+              numEmployees: 2,
+              logoUrl: "http://c2.img",
+            },
+          ],
+    });
+  });
+});
+
 describe("GET /companies", function () {
   test("ok for anon", async function () {
     const resp = await request(app).get("/companies");

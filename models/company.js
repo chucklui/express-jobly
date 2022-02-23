@@ -49,21 +49,61 @@ class Company {
     return company;
   }
 
+  static buildFilter({name, minEmployees, maxEmployees}){
+    let statement =[];
+    if(minEmployees > maxEmployees){
+      throw new BadRequestError("Invalid filter");
+    }
+    if(name !== undefined){
+      statement.push(`name LIKE '%${name}%'`)
+    }
+    if(minEmployees !== undefined){
+      statement.push(`num_employees >= ${minEmployees}`)
+    }
+    if(maxEmployees !== undefined){
+      statement.push(`num_employees <= ${maxEmployees}`)
+    }
+    if(statement.length === 0){
+      return undefined;
+    }
+    return `WHERE ` + statement.join(` AND `);
+
+  }
+
   /** Find all companies.
    *
    * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
 
-  static async findAll() {
+  static async findAll(search) {
+    
+
+    if(search === undefined){
+      const companiesRes = await db.query(
+          `SELECT handle,
+                  name,
+                  description,
+                  num_employees AS "numEmployees",
+                  logo_url AS "logoUrl"
+            FROM companies
+            ORDER BY name`);
+      return companiesRes.rows;
+    }
+    
+    let {name, minEmployees, maxEmployees} = search;
+    const filter = this.buildFilter({name, minEmployees, maxEmployees});
+    console.log("filter is :" ,filter);
     const companiesRes = await db.query(
-        `SELECT handle,
-                name,
-                description,
-                num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
-           FROM companies
-           ORDER BY name`);
+      `SELECT handle,
+              name,
+              description,
+              num_employees AS "numEmployees",
+              logo_url AS "logoUrl"
+        FROM companies
+        ${filter}
+        ORDER BY name`);
     return companiesRes.rows;
+
   }
 
   /** Given a company handle, return data about company.
