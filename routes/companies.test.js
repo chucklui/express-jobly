@@ -1,6 +1,7 @@
 "use strict";
 
 const request = require("supertest");
+const { BadRequestError, NotFoundError } = require("../expressError");
 
 const db = require("../db");
 const app = require("../app");
@@ -91,18 +92,6 @@ describe("GET /companies", function () {
           },
         ],
     });
-  });
-});
-
-describe("GET /companies", function () {
-  test("get filtered all with bad query string", async function () {
-    try{
-      await request(app).get("/companies").query({bad: "C"});
-      fail();
-    }catch(err) {
-      expect(err.status).toEqual(400);
-      expect(err instanceof BadRequestError).toBeTruthy();
-    }
   });
 });
 

@@ -54,23 +54,29 @@ class Company {
     if(minEmployees > maxEmployees){
       throw new BadRequestError("Invalid filter");
     }
-
+    
+    /** Arrays to store information of sql statements, and values to put
+    as sql parameters. */ 
     const statement = [];
     const values = [];
     if(name !== undefined){
-      statement.push(`name LIKE '%${name}%'`);
-      values.push(`name = $${statement.length}`);
+      values.push(`%${name}%`);
+      statement.push(`name LIKE $${values.length}`);
     }
     if(minEmployees !== undefined){
-      statement.push(`num_employees >= ${minEmployees}`);
-      values.push(`num_employees = $${statement.length}`);
+      values.push(minEmployees);
+      statement.push(`num_employees >= $${values.length}`);
     }
     if(maxEmployees !== undefined){
-      values.push(`num_employees <= ${maxEmployees}`);
-      statement.push(`name = $${values.length - 1}`);
+      values.push(maxEmployees);
+      statement.push(`num_employees <= $${values.length}`);
     }
 
-    return `WHERE ` + statement.join(` AND `);
+    const where = (values.length > 0) ? 
+                    `WHERE ` + statement.join(` AND `)
+                    : "";
+
+    return { where, values };
 
   }
 
@@ -83,19 +89,19 @@ class Company {
    * */
   static async findAll(search = {}) {
  
-    if(Object.keys(search).length === 0){
-      const companiesRes = await db.query(
-          `SELECT handle,
-                  name,
-                  description,
-                  num_employees AS "numEmployees",
-                  logo_url AS "logoUrl"
-            FROM companies
-            ORDER BY name`);
-      return companiesRes.rows;
-    }
+    // if(Object.keys(search).length === 0){
+    //   const companiesRes = await db.query(
+    //       `SELECT handle,
+    //               name,
+    //               description,
+    //               num_employees AS "numEmployees",
+    //               logo_url AS "logoUrl"
+    //         FROM companies
+    //         ORDER BY name`);
+    //   return companiesRes.rows;
+    // }
     
-    const filter = this.buildFilter(search);
+    const { where, values } = this.buildFilter(search);
     const companiesRes = await db.query(
       `SELECT handle,
               name,
@@ -103,8 +109,8 @@ class Company {
               num_employees AS "numEmployees",
               logo_url AS "logoUrl"
         FROM companies
-        ${filter}
-        ORDER BY name`);
+        ${where}
+        ORDER BY name`, values);
     return companiesRes.rows;
   }
 
