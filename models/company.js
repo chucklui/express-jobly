@@ -51,18 +51,23 @@ class Company {
 
   /**prevent sql injection */
   static buildFilter({name, minEmployees, maxEmployees}){
-    const statement =[];
     if(minEmployees > maxEmployees){
       throw new BadRequestError("Invalid filter");
     }
+
+    const statement = [];
+    const values = [];
     if(name !== undefined){
-      statement.push(`name LIKE '%${name}%'`)
+      statement.push(`name LIKE '%${name}%'`);
+      values.push(`name = $${statement.length}`);
     }
     if(minEmployees !== undefined){
-      statement.push(`num_employees >= ${minEmployees}`)
+      statement.push(`num_employees >= ${minEmployees}`);
+      values.push(`num_employees = $${statement.length}`);
     }
     if(maxEmployees !== undefined){
-      statement.push(`num_employees <= ${maxEmployees}`)
+      values.push(`num_employees <= ${maxEmployees}`);
+      statement.push(`name = $${values.length - 1}`);
     }
 
     return `WHERE ` + statement.join(` AND `);
