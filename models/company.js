@@ -49,8 +49,9 @@ class Company {
     return company;
   }
 
+  /**prevent sql injection */
   static buildFilter({name, minEmployees, maxEmployees}){
-    let statement =[];
+    const statement =[];
     if(minEmployees > maxEmployees){
       throw new BadRequestError("Invalid filter");
     }
@@ -63,22 +64,21 @@ class Company {
     if(maxEmployees !== undefined){
       statement.push(`num_employees <= ${maxEmployees}`)
     }
-    if(statement.length === 0){
-      return undefined;
-    }
+
     return `WHERE ` + statement.join(` AND `);
 
   }
 
   /** Find all companies.
-   *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * This method accepts an object of filters like => 
+   * { name: "C", minEmployees: 1, maxEmployees: 100 }
+   * to filter out the companies in db
+   * and returns => 
+   * [{ handle, name, description, numEmployees, logoUrl }, ...]
    * */
-
-  static async findAll(search) {
-    
-
-    if(search === undefined){
+  static async findAll(search = {}) {
+ 
+    if(Object.keys(search).length === 0){
       const companiesRes = await db.query(
           `SELECT handle,
                   name,
@@ -90,9 +90,7 @@ class Company {
       return companiesRes.rows;
     }
     
-    let {name, minEmployees, maxEmployees} = search;
-    const filter = this.buildFilter({name, minEmployees, maxEmployees});
-    console.log("filter is :" ,filter);
+    const filter = this.buildFilter(search);
     const companiesRes = await db.query(
       `SELECT handle,
               name,
@@ -103,7 +101,6 @@ class Company {
         ${filter}
         ORDER BY name`);
     return companiesRes.rows;
-
   }
 
   /** Given a company handle, return data about company.

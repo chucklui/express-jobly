@@ -87,8 +87,8 @@ describe("findAll", function () {
   });
 });
 
-describe("findAll", function () {
-  test("works: with filter", async function () {
+describe("findAll with filter", function () {
+  test("works: with name and employees number filter", async function () {
     let companies = await Company.findAll({name: "C", 
                                            minEmployees: 0,
                                            maxEmployees: 2});
@@ -110,6 +110,84 @@ describe("findAll", function () {
     ]);
   });
 });
+
+describe("findAll with filter", function () {
+  test("works: with name filter", async function () {
+    let companies = await Company.findAll({name: "C"});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+});
+
+describe("findAll with filter", function () {
+  test("works: with empty filter", async function () {
+    let companies = await Company.findAll({});
+    expect(companies).toEqual([
+      {
+        handle: "c1",
+        name: "C1",
+        description: "Desc1",
+        numEmployees: 1,
+        logoUrl: "http://c1.img",
+      },
+      {
+        handle: "c2",
+        name: "C2",
+        description: "Desc2",
+        numEmployees: 2,
+        logoUrl: "http://c2.img",
+      },
+      {
+        handle: "c3",
+        name: "C3",
+        description: "Desc3",
+        numEmployees: 3,
+        logoUrl: "http://c3.img",
+      },
+    ]);
+  });
+});
+
+describe("findAll with filter", function () {
+  test("not works: minEmployees greate than maxEmployees", async function () {
+    try{
+      let companies = await Company.findAll({minEmployees: 101, maxEmployees:100});
+      fail();
+    }catch(err){
+      expect(err.status).toEqual(400);
+      expect(err instanceof BadRequestError).toBeTruthy();
+    }
+  });
+});
+
+describe("findAll with filter", function () {
+  test("works: with employees number filter", async function () {
+    let companies = await Company.findAll({minEmployees:100, maxEmployees:200});
+    expect(companies).toEqual([]);
+  });
+});
+
 
 /************************************** get */
 

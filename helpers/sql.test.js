@@ -32,6 +32,7 @@ describe("sqlForPartialUpdate", function() {
                 { firstName: 'first_name', lastName: 'last_name', isAdmin: 'is_admin' });
             fail();
         } catch(err){
+            expect(err.status).toEqual(400);
             expect(err instanceof BadRequestError).toBeTruthy();
 
         }

@@ -1,14 +1,14 @@
 const { BadRequestError } = require("../expressError");
 
-// THIS NEEDS SOME GREAT DOCUMENTATION.
-/**this function accepts an object of key-value pairs of data
- * Example Inputs:
+/**This function accepts two objects of key-value pairs
+ * to transform the key from camel case to snake case 
+ * and make an array of values for sql $1, $2...
+ * Example Inputs =>
  * dataToUpdate { lastName: 'chuck1' }
  * jsToSql { firstName: 'first_name', lastName: 'last_name', isAdmin: 'is_admin' }
- * and returns {
+ * Returns => {
  * setCols: '"last_name"=$1',
- * values: ["chuck1"]
- * }
+ * values: ["chuck1"]}
  */
 function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   console.log("dataToUpdate", dataToUpdate);
@@ -23,7 +23,7 @@ function sqlForPartialUpdate(dataToUpdate, jsToSql) {
   const cols = keys.map((colName, idx) =>
       `"${jsToSql[colName] || colName}"=$${idx + 1}`,
   );
-  console.log("cols",cols);
+  console.log("COLS", cols);
   return {
     setCols: cols.join(", "),
     values: Object.values(dataToUpdate),
