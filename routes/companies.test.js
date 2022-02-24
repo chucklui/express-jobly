@@ -43,15 +43,13 @@ describe("POST /companies", function () {
   });
 
   test("not ok for user", async function () {
-    try{
-      await request(app)
+      const resp = await request(app)
       .post("/companies")
       .send(newCompany)
       .set("authorization", `Bearer ${u1Token}`);
-    }catch(err){
-      expect(err.status).toEqual(401);
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    }
+
+      expect(resp.statusCode).toEqual(401);
+    
   });
 
   test("bad request with missing data with admin", async function () {
@@ -208,17 +206,14 @@ describe("PATCH /companies/:handle", function () {
   });
 
   test("not work for user", async function () {
-    try{
-      await request(app)
+      const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
         name: "C1-new",
       })
       .set("authorization", `Bearer ${u1Token}`);
-    }catch(err){
-      expect(err.status).toEqual(401);
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    }
+
+      expect(resp.statusCode).toEqual(401);
   });
 
   test("unauth for anon", async function () {
@@ -285,13 +280,11 @@ describe("DELETE /companies/:handle", function () {
   });
 
   test("unauth for regular user", async function () {
-    try{
-      await request(app)
+      const resp = await request(app)
       .delete(`/companies/nope`)
       .set("authorization", `Bearer ${u1Token}`);
-    }catch(err){
+
       expect(resp.statusCode).toEqual(401);
-      expect(err instanceof UnauthorizedError).toBeTruthy();
-    }
+    
   });
 });
