@@ -47,12 +47,10 @@ describe("POST /companies", function () {
       .post("/companies")
       .send(newCompany)
       .set("authorization", `Bearer ${u1Token}`);
-
       expect(resp.statusCode).toEqual(401);
-    
   });
 
-  test("bad request with missing data with admin", async function () {
+  test("admin: bad request with missing data", async function () {
     const resp = await request(app)
       .post("/companies")
       .send({
@@ -63,7 +61,7 @@ describe("POST /companies", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request with invalid data with admin", async function () {
+  test("admin: bad request with invalid data", async function () {
     const resp = await request(app)
       .post("/companies")
       .send({
@@ -212,7 +210,6 @@ describe("PATCH /companies/:handle", function () {
         name: "C1-new",
       })
       .set("authorization", `Bearer ${u1Token}`);
-
       expect(resp.statusCode).toEqual(401);
   });
 
@@ -225,7 +222,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found on no such company with admin", async function () {
+  test("admin: not found on no such company", async function () {
     const resp = await request(app)
       .patch(`/companies/nope`)
       .send({
@@ -235,7 +232,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("bad request on handle change attempt with admin", async function () {
+  test("admin: bad request on handle(pk) change attempt", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -245,7 +242,7 @@ describe("PATCH /companies/:handle", function () {
     expect(resp.statusCode).toEqual(400);
   });
 
-  test("bad request on invalid data with admin", async function () {
+  test("admin: bad request on invalid data", async function () {
     const resp = await request(app)
       .patch(`/companies/c1`)
       .send({
@@ -266,25 +263,23 @@ describe("DELETE /companies/:handle", function () {
     expect(resp.body).toEqual({ deleted: "c1" });
   });
 
-  test("unauth for anon", async function () {
-    const resp = await request(app)
-      .delete(`/companies/c1`);
-    expect(resp.statusCode).toEqual(401);
+  test("unauth for regular user", async function () {
+      const resp = await request(app)
+      .delete(`/companies/nope`)
+      .set("authorization", `Bearer ${u1Token}`);
+      expect(resp.statusCode).toEqual(401);
   });
-
-  test("not found for no such company with admin", async function () {
+  test("admin: not found for no such company", async function () {
     const resp = await request(app)
       .delete(`/companies/nope`)
       .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
-  test("unauth for regular user", async function () {
-      const resp = await request(app)
-      .delete(`/companies/nope`)
-      .set("authorization", `Bearer ${u1Token}`);
-
-      expect(resp.statusCode).toEqual(401);
-    
+  test("unauth for anon", async function () {
+    const resp = await request(app)
+      .delete(`/companies/c1`);
+    expect(resp.statusCode).toEqual(401);
   });
+
 });
