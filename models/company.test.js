@@ -170,7 +170,7 @@ describe("findAll with filter", function () {
 });
 
 describe("findAll with filter", function () {
-  test("not works: minEmployees greate than maxEmployees", async function () {
+  test("not works: minEmployees greater than maxEmployees", async function () {
     try{
       let companies = await Company.findAll({minEmployees: 101, maxEmployees:100});
       fail();
